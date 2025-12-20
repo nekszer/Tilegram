@@ -1,0 +1,26 @@
+# Build outputs
+bin/
+obj/
+
+# Visual Studio files
+.vs/
+*.suo
+*.user
+*.userosscache
+
+# Rider/IntelliJ
+.idea/
+
+# User settings
+*.csproj.user
+
+# Packages
+packages/
+*.nupkg
+
+# Test results
+TestResults/
+*.trx
+
+# macOS
+.DS_Store
