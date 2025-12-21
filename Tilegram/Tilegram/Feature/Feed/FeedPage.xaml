@@ -1,0 +1,197 @@
+﻿<Page x:Class="Tilegram.Feature.Feed.FeedPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      mc:Ignorable="d"
+      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+      xmlns:Local="using:Tilegram.Feature.Feed">
+
+    <Page.DataContext>
+        <Local:FeedViewModel />
+    </Page.DataContext>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        
+        <ScrollViewer Grid.Row="1">
+            <StackPanel>
+                <TextBlock Text="Tilegram" FontSize="{ThemeResource HubHeaderThemeFontSize}" Padding="15,6" />
+                <ListView x:Name="FeedListView"
+                              ItemsSource="{Binding FeedItems}"
+                              SelectionMode="None"
+                              IsItemClickEnabled="True"
+                              ItemClick="FeedListView_ItemClick"
+                              Loaded="FeedListView_Loaded"
+                              ContinuumNavigationTransitionInfo.ExitElementContainer="True">
+
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="Local:FeedModel">
+                            <Grid BorderThickness="0,0,0,1">
+
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- HEADER DEL POST (Usuario) -->
+                                <Grid Grid.Row="0" 
+                                          Padding="12,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Foto de perfil -->
+                                    <Ellipse Grid.Column="0" 
+                                                 Width="32" 
+                                                 Height="32"
+                                                 Margin="0,0,12,0">
+                                        <Ellipse.Fill>
+                                            <ImageBrush ImageSource="{x:Bind User.ProfilePictureUrl, Mode=OneWay}"
+                                                            Stretch="UniformToFill"/>
+                                        </Ellipse.Fill>
+                                    </Ellipse>
+
+                                    <!-- Información del usuario -->
+                                    <StackPanel Grid.Column="1" 
+                                                    VerticalAlignment="Center">
+                                        <TextBlock Text="{x:Bind User.Username, Mode=OneWay}"
+                                                       FontWeight="SemiBold"
+                                                       FontSize="14"/>
+                                        <TextBlock Text="{x:Bind User.FullName, Mode=OneWay}"
+                                                       
+                                                       FontSize="12"/>
+                                    </StackPanel>
+
+                                    <!-- Tiempo y menú -->
+                                    <StackPanel Grid.Column="2" 
+                                                    Orientation="Horizontal"
+                                                    VerticalAlignment="Center">
+                                        <!-- Verificado -->
+                                        <FontIcon Glyph="&#xE73E;" 
+                                                      FontFamily="Segoe MDL2 Assets"
+                                                      Foreground="#3897F0"
+                                                      FontSize="16"
+                                                      Visibility="{x:Bind User.IsVerified, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                      Margin="0,0,8,0"/>
+
+                                        <TextBlock Text="{x:Bind TimeAgo, Mode=OneWay}"
+                                                       
+                                                       FontSize="12"
+                                                       Margin="0,0,8,0"/>
+
+                                        <Button Style="{StaticResource TextBlockButtonStyle}"
+                                                    Click="MoreOptions_Click">
+                                            <SymbolIcon Symbol="More"/>
+                                        </Button>
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- CONTENIDO MULTIMEDIA -->
+                                <ContentControl Grid.Row="1" 
+                                                    HorizontalContentAlignment="Stretch"
+                                                    Content="{x:Bind Mode=OneWay}">
+                                    <ContentControl.ContentTemplate>
+                                        <DataTemplate x:DataType="Local:FeedModel">
+                                            <Local:MediaContentControl FeedItem="{x:Bind Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </ContentControl.ContentTemplate>
+                                </ContentControl>
+
+                                <!-- ACCIONES (Like, Comment, Share, Save) -->
+                                <StackPanel Grid.Row="2" 
+                                                Orientation="Horizontal" 
+                                                Padding="12,8">
+
+                                    <!-- Like Button -->
+                                    <ToggleButton x:Name="LikeButton"
+                                                      IsChecked="{x:Bind HasLiked, Mode=TwoWay}"
+                                                      Checked="LikeButton_Checked"
+                                                      Unchecked="LikeButton_Unchecked"
+                                                      Style="{StaticResource IconToggleButtonStyle}" Foreground="{ThemeResource ButtonForegroundThemeBrush}">
+                                        <SymbolIcon x:Name="LikeIcon" 
+                                                        Symbol="Like"/>
+                                    </ToggleButton>
+
+                                    <!-- Comment Button -->
+                                    <Button x:Name="CommentButton" Click="CommentButton_Click"
+                                                Style="{StaticResource IconButtonStyle}" Foreground="{ThemeResource ButtonForegroundThemeBrush}">
+                                        <SymbolIcon Symbol="Comment"/>
+                                    </Button>
+
+                                    <!-- Share Button -->
+                                    <Button x:Name="ShareButton" Click="ShareButton_Click"
+                                                Style="{StaticResource IconButtonStyle}" Foreground="{ThemeResource ButtonForegroundThemeBrush}">
+                                        <SymbolIcon Symbol="Share"/>
+                                    </Button>
+
+                                    <!-- Save Button -->
+                                    <ToggleButton x:Name="SaveButton"
+                                                  IsChecked="{x:Bind HasSaved, Mode=TwoWay}"
+                                                  Checked="SaveButton_Checked"
+                                                  Unchecked="SaveButton_Unchecked"
+                                                  HorizontalAlignment="Right"
+                                                  Style="{StaticResource IconToggleButtonStyle}"
+                                                  Foreground="{ThemeResource ButtonForegroundThemeBrush}">
+                                        <SymbolIcon x:Name="SaveIcon" Symbol="Favorite"/>
+                                    </ToggleButton>
+                                </StackPanel>
+
+                                <!-- LIKES COUNT -->
+                                <TextBlock Grid.Row="3"
+                                               Text="{x:Bind LikesCountFormatted, Mode=OneWay}"
+                                               FontWeight="SemiBold"
+                                               Margin="12,0,12,4"
+                                               FontSize="14"/>
+
+                                <!-- CAPTION -->
+                                <RichTextBlock Grid.Row="4" 
+                                                   Padding="12,0,12,8">
+                                    <Paragraph>
+                                        <Bold>
+                                            <Run Text="{x:Bind User.Username, Mode=OneWay}"/>
+                                        </Bold>
+                                        <Run Text=" "/>
+                                        <Run Text="{x:Bind Caption, Mode=OneWay}"/>
+                                    </Paragraph>
+                                </RichTextBlock>
+
+                                <!-- VER TODOS LOS COMENTARIOS -->
+                                <Button Grid.Row="5"
+                                            Content="{x:Bind CommentsCountFormatted, Mode=OneWay, Converter={StaticResource CommentsCountConverter}}"
+                                            Click="ViewComments_Click"
+                                            Style="{StaticResource TextBlockButtonStyle}"
+                                            HorizontalAlignment="Left"
+                                            Margin="12,0,12,8"
+                                            Visibility="{x:Bind CommentsCount, Mode=OneWay, Converter={StaticResource GreaterThanZeroToVisibilityConverter}}"/>
+
+                                <!-- FECHA -->
+                                <TextBlock Grid.Row="6"
+                                               Text="{x:Bind TakenAt, Mode=OneWay, Converter={StaticResource DateTimeConverter}}"
+                                               FontSize="10"
+                                               Margin="12,50,12,12"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+
+                    <ListView.Footer>
+                        <Grid Height="60" Background="Transparent">
+                            <ProgressRing IsActive="{Binding IsLoadingMore}"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Grid>
+                    </ListView.Footer>
+                </ListView>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

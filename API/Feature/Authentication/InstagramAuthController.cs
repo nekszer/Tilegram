@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 namespace Feature.Authentication
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/authentication")]
     public class InstagramAuthController : ControllerBase
     {
         private IWebHostEnvironment Env { get; set; }
@@ -20,7 +20,7 @@ namespace Feature.Authentication
             JwtService = jwtService;
         }
 
-        [HttpPost("/api/authentication/login")]
+        [HttpPost("login")]
         public async Task<IActionResult> Login([FromForm] string username, [FromForm] string password)
         {
             try
@@ -38,13 +38,13 @@ namespace Feature.Authentication
 
                 if (!_instaApi.IsUserAuthenticated)
                 {
-                    // login
                     Console.WriteLine($"Logging in as {userSession.UserName}");
                     var logInResult = await _instaApi.LoginAsync();
+
                     if (!logInResult.Succeeded)
                     {
                         Console.WriteLine($"Unable to login: {logInResult.Info.Message}");
-                        return Unauthorized();
+                        return Unauthorized(logInResult.Info.Message);
                     }
 
                     Console.WriteLine($"Success login: {logInResult.Info.Message}");
@@ -82,6 +82,7 @@ namespace Feature.Authentication
 
     }
 
+    #region DTO
     public class InstaApiSessionData
     {
         public DeviceInfoData DeviceInfo { get; set; }
@@ -177,4 +178,5 @@ namespace Feature.Authentication
 
 
     }
+    #endregion
 }

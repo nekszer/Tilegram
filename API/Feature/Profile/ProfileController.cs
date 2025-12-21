@@ -1,5 +1,4 @@
-﻿using API.Feature.Profile;
-using API.Services;
+﻿using API.Services;
 using InstagramApiSharp;
 using InstagramApiSharp.API;
 using InstagramApiSharp.API.Builder;
@@ -8,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Feature.Profile
 {
-    [Route("api/[controller]")]
+    [Route("api/profile")]
     [ApiController]
     public class ProfileController : ControllerBase
     {
@@ -27,7 +26,7 @@ namespace Feature.Profile
             {
                 var _instaApi = InstaApiBuilder.CreateBuilder()
                     .UseLogger(new DebugLogger(InstagramApiSharp.Logger.LogLevel.Exceptions))
-            .Build();
+                    .Build();
 
                 var payload = JwtService.ReadPayload(accessToken);
                 var userId = payload["sub"];
@@ -57,11 +56,7 @@ namespace Feature.Profile
 
             try
             {
-                var user = await _instaApi.UserProcessor.GetUserAsync(username);
-                if (!(user?.Succeeded ?? false))
-                    return NotFound(user?.Info?.Message ?? "No se encontro el usuario");
-
-                var info = await _instaApi.UserProcessor.GetUserInfoByIdAsync(user.Value.Pk);
+                var info = await _instaApi.UserProcessor.GetUserInfoByUsernameAsync(username);
                 if (!(info?.Succeeded ?? false))
                     return NotFound();
 
@@ -85,7 +80,7 @@ namespace Feature.Profile
         }
 
         [HttpGet("posts/{username}")]
-        public async Task<IActionResult> GetUserPosts([FromHeader] string accessToken, string username, int page = 1)
+        public async Task<IActionResult> GetUserPosts([FromHeader] string accessToken, string username, int page = 5)
         {
             var _instaApi = await LoadSession(accessToken);
             if (_instaApi == null)
@@ -93,9 +88,13 @@ namespace Feature.Profile
 
             try
             {
+                var info = await _instaApi.UserProcessor.GetUserInfoByUsernameAsync(username);
+                if (!(info?.Succeeded ?? false))
+                    return NotFound();
+
                 var userMedia = await _instaApi
-                .UserProcessor
-                .GetUserMediaAsync(username, PaginationParameters.MaxPagesToLoad(page));
+                    .UserProcessor
+                    .GetUserMediaAsync(username, PaginationParameters.MaxPagesToLoad(page));
 
                 if (!userMedia.Succeeded)
                     return BadRequest(userMedia.Info?.Message);
@@ -112,9 +111,27 @@ namespace Feature.Profile
                     TakenAt = m.TakenAt
                 });
 
-                return Ok(new UserMedia
-                {
+                var userInfo = info.Value;
+                float allMediaCount = userInfo.MediaCount;
+                float mediaCountPage = posts.Count();
+                var totalPages = 1f;
 
+                if(allMediaCount > mediaCountPage)
+                    totalPages = allMediaCount / mediaCountPage;
+
+                var intTotalPages = (int)totalPages;
+                float floatResidual = totalPages - intTotalPages;
+
+                if (floatResidual > 0.0)
+                    totalPages = intTotalPages + 1;
+
+                return Ok(new
+                {
+                    currentPage = page,
+                    totalPages = totalPages,
+                    totalMedia = allMediaCount,
+                    processMedia = mediaCountPage,
+                    posts = posts
                 });
             }
             catch (Exception ex)

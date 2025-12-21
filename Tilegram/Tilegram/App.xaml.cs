@@ -7,12 +7,20 @@ using Tilegram.Services.Authentication;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Storage;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
 namespace Tilegram
 {
+    public class AppRoutes
+    {
+        public static string Login = "/login";
+
+        public static string Profile = "/profile";
+    }
+
     /// <summary>
     /// Proporciona un comportamiento específico de la aplicación para complementar la clase Application predeterminada.
     /// </summary>
@@ -35,8 +43,8 @@ namespace Tilegram
         {
             var container = Container.Instance;
 
-            ApplicationData.Current.LocalSettings.Values["ApiBaseUrl"] = "http://localhost:5162/";
-            ApplicationData.Current.LocalSettings.Values["AccessToken"] = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYyMjA0NDQ2NDcxLCJuYW1lIjoiU29mw61hIENhc3RpbGxvIiwidXNlck5hbWUiOiJiY2FzX3NvZmlhIiwicGljdHVyZSI6Imh0dHBzOi8vaW5zdGFncmFtLmZtZXgxMC00LmZuYS5mYmNkbi5uZXQvdi90NTEuMjg4NS0xOS81MzcyNTIyMTFfMTc5MjAwMjE2NTkwNzg0NzJfNzg3NjM3Njg5ODM5NzQxOTg3MV9uLmpwZz9zdHA9ZHN0LWpwZ19lMF9zMTUweDE1MF90dDYmZWZnPWV5SjJaVzVqYjJSbFgzUmhaeUk2SW5CeWIyWnBiR1ZmY0dsakxtUnFZVzVuYnk0eE1EZ3dMbU15SW4wJl9uY19odD1pbnN0YWdyYW0uZm1leDEwLTQuZm5hLmZiY2RuLm5ldCZfbmNfY2F0PTEwNCZfbmNfb2M9UTZjWjJRR25pWk5VVUdBMWdRd0s1NVgtSldDSktMTWdZN1BnNG9zOUE2SVNfZE1SWXpJQ3h0NmtvRk1HTWtTM3M3UW9ZN00mX25jX29oYz13QkV1a3dNdEV6MFE3a052d0habThIbyZlZG09QUFBQUFBQUJBQUFBJmNjYj03LTUmaWdfY2FjaGVfa2V5PUdIUFJCU0JJVDFzdEtxby1BRjg1RXVvT2cwNXRibU5EQVFBQjE1MDE1MDBqLWNjYjctNSZvaD0wMF9BZmxiUW1uNkpqdXBzZXAzcFJFOTRhUWxkQ2VhWTNZbXlTYzNRa0lLQlMxMHpnJm9lPTY5NEJCOTcyJl9uY19zaWQ9MzI4MjU5IiwiaWF0IjoxNzY2MTkzNzUxLCJleHAiOjE3Njg3ODU3NTF9.VxvzEAuLN2kUo3mcLffDuoz5TIdZa-KZjTRSwXjUhz4";
+            ApplicationData.Current.LocalSettings.Values["ApiBaseUrl"] = "https://743efcc1c624.ngrok-free.app/";
+            // ApplicationData.Current.LocalSettings.Values["AccessToken"] = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYyMjA0NDQ2NDcxLCJuYW1lIjoiU29mw61hIENhc3RpbGxvIiwidXNlck5hbWUiOiJiY2FzX3NvZmlhIiwicGljdHVyZSI6Imh0dHBzOi8vaW5zdGFncmFtLmZtZXgxMC00LmZuYS5mYmNkbi5uZXQvdi90NTEuMjg4NS0xOS81MzcyNTIyMTFfMTc5MjAwMjE2NTkwNzg0NzJfNzg3NjM3Njg5ODM5NzQxOTg3MV9uLmpwZz9zdHA9ZHN0LWpwZ19lMF9zMTUweDE1MF90dDYmZWZnPWV5SjJaVzVqYjJSbFgzUmhaeUk2SW5CeWIyWnBiR1ZmY0dsakxtUnFZVzVuYnk0eE1EZ3dMbU15SW4wJl9uY19odD1pbnN0YWdyYW0uZm1leDEwLTQuZm5hLmZiY2RuLm5ldCZfbmNfY2F0PTEwNCZfbmNfb2M9UTZjWjJRR25pWk5VVUdBMWdRd0s1NVgtSldDSktMTWdZN1BnNG9zOUE2SVNfZE1SWXpJQ3h0NmtvRk1HTWtTM3M3UW9ZN00mX25jX29oYz13QkV1a3dNdEV6MFE3a052d0habThIbyZlZG09QUFBQUFBQUJBQUFBJmNjYj03LTUmaWdfY2FjaGVfa2V5PUdIUFJCU0JJVDFzdEtxby1BRjg1RXVvT2cwNXRibU5EQVFBQjE1MDE1MDBqLWNjYjctNSZvaD0wMF9BZmxiUW1uNkpqdXBzZXAzcFJFOTRhUWxkQ2VhWTNZbXlTYzNRa0lLQlMxMHpnJm9lPTY5NEJCOTcyJl9uY19zaWQ9MzI4MjU5IiwiaWF0IjoxNzY2MTkzNzUxLCJleHAiOjE3Njg3ODU3NTF9.VxvzEAuLN2kUo3mcLffDuoz5TIdZa-KZjTRSwXjUhz4";
 
             container.Register(ioc => 
             {
@@ -53,6 +61,14 @@ namespace Tilegram
                 return new Services.Profile.ProfileService(apiBaseUrl, accessToken, ioc.Resolve<JwtService>());
             });
 
+            container.Register(ioc =>
+            {
+                var localSettings = ApplicationData.Current.LocalSettings;
+                var apiBaseUrl = localSettings.Values["ApiBaseUrl"] as string;
+                var accessToken = localSettings.Values["AccessToken"] as string;
+                return new Services.Feed.FeedService(apiBaseUrl, accessToken, ioc.Resolve<JwtService>());
+            });
+
             var jwtKey = "304e8693f44b4b0fcb17fd256187d65fdb16df8c9adc12338e4693e68438ca9b";
             container.Register(ioc => new JwtService(jwtKey));
         }
@@ -63,8 +79,8 @@ namespace Tilegram
             var needAuth = string.IsNullOrEmpty(hasAccessToken);
 
             var routeService = RouteService.Current;
-            routeService.Add<LoginPage>("/auth", needAuth);
-            routeService.Add<ProfilePage>("/profile", !needAuth);
+            routeService.Add<LoginPage>(AppRoutes.Login, needAuth);
+            routeService.Add<Feature.Feed.FeedPage>(AppRoutes.Profile, !needAuth);
         }
 
         #region App

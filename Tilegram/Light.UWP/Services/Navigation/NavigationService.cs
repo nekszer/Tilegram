@@ -100,5 +100,10 @@ namespace Light.UWP.Services.Navigation
             {
             }
         }
+
+        public void Add<T>(object login, bool needAuth)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

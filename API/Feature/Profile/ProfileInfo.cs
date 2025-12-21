@@ -1,4 +1,4 @@
-﻿namespace API.Feature.Profile
+﻿namespace Feature.Profile
 {
     public class ProfileInfo
     {

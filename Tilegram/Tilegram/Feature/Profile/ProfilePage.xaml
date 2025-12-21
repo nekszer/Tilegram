@@ -49,7 +49,7 @@
                         </StackPanel>
 
                         <!-- Highlights -->
-                        <TextBlock Text="Highlights" FontSize="18" FontWeight="SemiBold" Margin="0,30,0,10" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Highlights" FontSize="18" FontWeight="SemiBold" Margin="0,30,0,10" HorizontalAlignment="Center" Visibility="Collapsed"/>
                         <ScrollViewer VerticalScrollMode="Auto" HorizontalAlignment="Center" Visibility="Collapsed">
                             <GridView ItemsSource="{Binding Highlights}" IsItemClickEnabled="True" SelectionMode="None" Width="312">
                                 <GridView.ItemTemplate>
@@ -74,23 +74,116 @@
                     </StackPanel>
                 </DataTemplate>
             </HubSection>
-            <!-- Publicaciones en cuadrícula -->
-            <HubSection Header="Fotos">
+            
+            <HubSection Header="Fotos" Margin="0,0,0,20">
                 <DataTemplate>
-                    <GridView ItemsSource="{Binding Posts}" IsItemClickEnabled="True" SelectionMode="None">
-                        <GridView.ItemTemplate>
-                            <DataTemplate>
-                                <Border BorderBrush="{ThemeResource SystemControlAccentDark2AcrylicWindowAccentDark2MediumHighBrush}" BorderThickness="1" Margin="1">
-                                    <Image Source="{Binding ImagePath}" Stretch="UniformToFill" Width="120" Height="120"/>
-                                </Border>
-                            </DataTemplate>
-                        </GridView.ItemTemplate>
-                        <GridView.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <ItemsWrapGrid Orientation="Horizontal" MaximumRowsOrColumns="3"/>
-                            </ItemsPanelTemplate>
-                        </GridView.ItemsPanel>
-                    </GridView>
+                    <Grid Background="Transparent" MinHeight="500">
+                        <!-- Bento Grid -->
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" VerticalScrollMode="Auto">
+                            <GridView x:Name="BentoGrid" ItemsSource="{Binding Posts}" IsItemClickEnabled="True" SelectionMode="None"
+                                      ItemClick="OnPostItemClick" Loaded="OnBentoGridLoaded" SizeChanged="OnBentoGridSizeChanged">
+
+                                <!-- Template para cada item/post -->
+                                <GridView.ItemTemplate>
+                                    <DataTemplate>
+
+                                        <!-- Contenedor del post con tamaño variable -->
+                                        <Grid Margin="4">
+
+                                            <!-- Border principal -->
+                                            <Border Background="{ThemeResource SystemControlBackgroundAltHighBrush}" 
+                                                    BorderBrush="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                                                    BorderThickness="1" CornerRadius="6">
+
+                                                <Grid>
+                                                    <!-- Imagen del post -->
+                                                    <Image Source="{Binding ImagePath}" Stretch="UniformToFill" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+
+                                                    <!-- Overlay para mejor contraste -->
+                                                    <Rectangle VerticalAlignment="Bottom" Height="70">
+                                                        <Rectangle.Fill>
+                                                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                                <GradientStop Color="Transparent" Offset="0"/>
+                                                                <GradientStop Color="{ThemeResource SystemAccentColor}" Offset="2"/>
+                                                            </LinearGradientBrush>
+                                                        </Rectangle.Fill>
+                                                    </Rectangle>
+
+                                                    <!-- Contenido textual del post -->
+                                                    <StackPanel VerticalAlignment="Bottom" Margin="6">
+
+                                                        <!-- Información del post -->
+                                                        <Grid Margin="0,4,0,0">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="Auto" />
+                                                                <ColumnDefinition Width="Auto" />
+                                                                <ColumnDefinition Width="*" />
+                                                            </Grid.ColumnDefinitions>
+                                                            <SymbolIcon Grid.Column="0" Symbol="Like" Margin="0,0,4,0"/>
+                                                            <TextBlock Grid.Column="1" Text="{Binding Likes}" Foreground="White" FontSize="12" VerticalAlignment="Center"/>
+                                                        </Grid>
+                                                    </StackPanel>
+
+                                                    <!-- Botón de opciones -->
+                                                    <Button HorizontalAlignment="Right" VerticalAlignment="Top" 
+                                                            Margin="6" Padding="6" Background="#40000000" BorderThickness="0"
+                                                            Click="OnPostOptionsClick">
+                                                        <SymbolIcon Symbol="More" Foreground="White" />
+                                                    </Button>
+                                                </Grid>
+                                            </Border>
+                                        </Grid>
+                                    </DataTemplate>
+                                </GridView.ItemTemplate>
+
+                                <!-- Panel de items: VariableSizedWrapGrid para el Bento Grid -->
+                                <GridView.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VariableSizedWrapGrid x:Name="BentoPanel" Orientation="Horizontal" MaximumRowsOrColumns="3" ItemHeight="140" ItemWidth="140" />
+                                    </ItemsPanelTemplate>
+                                </GridView.ItemsPanel>
+
+                                <!-- Estilo del contenedor de items (IMPORTANTE para los spans) -->
+                                <GridView.ItemContainerStyle>
+                                    <Style TargetType="GridViewItem">
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                        <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                                        <Setter Property="Margin" Value="0"/>
+                                        <Setter Property="Padding" Value="0"/>
+                                        <Setter Property="Background" Value="Transparent"/>
+
+                                        <!-- Para UWP 15063, algunos estilos pueden necesitar ajustes -->
+                                        <Setter Property="UseSystemFocusVisuals" Value="True"/>
+
+                                        <!-- Transición para entrada -->
+                                        <Setter Property="Transitions">
+                                            <Setter.Value>
+                                                <TransitionCollection>
+                                                    <EntranceThemeTransition FromHorizontalOffset="0" FromVerticalOffset="30"/>
+                                                </TransitionCollection>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </GridView.ItemContainerStyle>
+                            </GridView>
+                        </ScrollViewer>
+
+                        <!-- Botón flotante para agregar nueva publicación (simplificado) -->
+                        <Button HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,20,20"
+                                Width="48" Height="48" Background="{ThemeResource SystemControlHighlightAccentBrush}" 
+                                BorderThickness="0" Click="OnAddNewPostClick">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Grid>
+                                        <Ellipse Fill="{TemplateBinding Background}"></Ellipse>
+                                        <Viewbox Width="20" Height="20">
+                                            <SymbolIcon Symbol="Add" Foreground="White"/>
+                                        </Viewbox>
+                                    </Grid>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </Grid>
                 </DataTemplate>
             </HubSection>
         </Hub>

@@ -12,7 +12,7 @@
     <DefaultLanguage>es-ES</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.16299.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.15063.0</TargetPlatformMinVersion>
+    <TargetPlatformMinVersion>10.0.16299.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -119,12 +119,21 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\ValueToStringConverter.cs" />
     <Compile Include="Either.cs" />
     <Compile Include="Feature\Authentication\LoginPage.xaml.cs">
       <DependentUpon>LoginPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Feature\Feed\FeedPage.xaml.cs">
+      <DependentUpon>FeedPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Feature\Feed\FeedViewModel.cs" />
+    <Compile Include="Feature\Feed\MediaContentControl.xaml.cs">
+      <DependentUpon>MediaContentControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Feature\Profile\InstagramPostService.cs" />
     <Compile Include="Feature\Profile\InstagramProfileData.cs" />
+    <Compile Include="Feature\Profile\Post.cs" />
     <Compile Include="Feature\Profile\ProfilePage.xaml.cs">
       <DependentUpon>ProfilePage.xaml</DependentUpon>
     </Compile>
@@ -132,6 +141,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Authentication\AuthenticationService.cs" />
     <Compile Include="Services\Authentication\JwtService.cs" />
+    <Compile Include="Feature\Feed\FeedModel.cs" />
+    <Compile Include="Services\Feed\FeedService.cs" />
     <Compile Include="Services\Profile\ProfileService.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -157,6 +168,14 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Page Include="Feature\Authentication\LoginPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Feature\Feed\FeedPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Feature\Feed\MediaContentControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -2,7 +2,9 @@
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Tilegram.Services.Profile;
 
 namespace Tilegram.Feature.Profile
@@ -20,7 +22,8 @@ namespace Tilegram.Feature.Profile
             }
         }
 
-        private ObservableCollection<Post> _posts;
+        // AHORA esta colección será para el Bento Grid
+        private ObservableCollection<Post> _posts = new ObservableCollection<Post>();
         public ObservableCollection<Post> Posts
         {
             get => _posts;
@@ -31,7 +34,7 @@ namespace Tilegram.Feature.Profile
             }
         }
 
-        private ObservableCollection<InstagramProfileService.InstagramProfileHighlight> _highlights;
+        private ObservableCollection<InstagramProfileService.InstagramProfileHighlight> _highlights = new ObservableCollection<InstagramProfileService.InstagramProfileHighlight>();
         public ObservableCollection<InstagramProfileService.InstagramProfileHighlight> Highlights
         {
             get => _highlights;
@@ -42,38 +45,59 @@ namespace Tilegram.Feature.Profile
             }
         }
 
+        // Propiedad adicional para controlar el layout (opcional)
+        private int _gridColumns = 3;
+        public int GridColumns
+        {
+            get => _gridColumns;
+            set
+            {
+                _gridColumns = value;
+                OnPropertyChanged();
+            }
+        }
+
         public ProfileViewModel()
         {
-            Posts = new ObservableCollection<Post>();
-            Highlights = new ObservableCollection<InstagramProfileService.InstagramProfileHighlight>();
-
             LoadProfileData();
-            // LoadHighlights(service);
         }
 
         private async void LoadHighlights(InstagramProfileService service)
         {
-            var hightLights = await service.LoadHightlights();
-            // Simulación: en producción deserializas el JSON
-            foreach (var item in hightLights)
+            var highlights = await service.LoadHightlights();
+            foreach (var item in highlights)
                 Highlights.Add(item);
         }
 
         private async void LoadProfileData()
         {
-            // Simulación de publicaciones (ejemplo)
-            Posts.Add(new Post { ImagePath = "https://lipsum.app/id/1/200x200" });
-            Posts.Add(new Post { ImagePath = "https://lipsum.app/id/2/200x200" });
-            Posts.Add(new Post { ImagePath = "https://lipsum.app/id/3/200x200" });
-            Posts.Add(new Post { ImagePath = "https://lipsum.app/id/4/200x200" });
-            Posts.Add(new Post { ImagePath = "https://lipsum.app/id/5/200x200" });
-            Posts.Add(new Post { ImagePath = "https://lipsum.app/id/6/200x200" });
-            Posts.Add(new Post { ImagePath = "https://lipsum.app/id/7/200x200" });
-            Posts.Add(new Post { ImagePath = "https://lipsum.app/id/8/200x200" });
-            Posts.Add(new Post { ImagePath = "https://lipsum.app/id/9/200x200" });
-            Posts.Add(new Post { ImagePath = "https://lipsum.app/id/10/200x200" });
+            // Cargar posts con Bento Grid
+            await LoadPostsFromService();
 
-            var service = Container.Instance.Resolve<ProfileService>();
+            // Cargar perfil
+            await LoadProfile();
+        }
+
+        // Método para cargar posts desde un servicio (ejemplo)
+        public async Task LoadPostsFromService()
+        {
+            var service = Light.UWP.Services.IoC.Container.Instance.Resolve<ProfileService>();
+            var mePostsEither = await service.MePosts();
+
+            mePostsEither.Match(ex =>
+            {
+
+            }, success =>
+            {
+                foreach (var post in success.Posts)
+                    Posts.Add(Post.CreateWithRandomSize(post.Images.FirstOrDefault(), post.Text ?? string.Empty, post.LikesCount, post.TakenAt));
+            });
+        }
+
+        #region Load Profile
+        private async Task LoadProfile()
+        {
+            var service = Light.UWP.Services.IoC.Container.Instance.Resolve<ProfileService>();
             if (service == null)
                 return;
 
@@ -83,27 +107,29 @@ namespace Tilegram.Feature.Profile
 
         private void OnMeError(Exception obj)
         {
-            // TODO: No podemos cargar tu perfil
+            // Manejar error
+            System.Diagnostics.Debug.WriteLine($"Error loading profile: {obj.Message}");
         }
 
         private void OnMeSuccess(ProfileData profileData)
         {
             Profile = profileData;
         }
+        #endregion
 
         #region Observable
         public event PropertyChangedEventHandler PropertyChanged;
+
+        internal void ChangePostSize(int index, int size)
+        {
+            Posts[index].GridSize = size;
+        }
+
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
-    }
-
-    // Clase auxiliar para publicaciones
-    public class Post
-    {
-        public string ImagePath { get; set; }
     }
 
 }
