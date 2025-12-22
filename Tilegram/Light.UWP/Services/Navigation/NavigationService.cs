@@ -29,7 +29,7 @@ namespace Light.UWP.Services.Navigation
             RootFrame = rootFrame;
         }
 
-        public void PushAsync(string path, object arguments = null)
+        public void NavigateTo(string path, object arguments = null)
         {
             if (RootFrame == null)
                 throw new NavigationServiceInitializationException("Service not initialized");

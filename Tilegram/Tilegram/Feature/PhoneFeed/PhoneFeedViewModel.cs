@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Light.UWP.Services.Navigation;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -11,6 +12,7 @@ namespace Tilegram.Feature.PhoneFeed
 {
     public class PhoneFeedViewModel : INotifyPropertyChanged
     {
+        #region FeedItems
         private ObservableCollection<FeedModel> _feedItems;
         public ObservableCollection<FeedModel> FeedItems
         {
@@ -21,7 +23,9 @@ namespace Tilegram.Feature.PhoneFeed
                 OnPropertyChanged();
             }
         }
+        #endregion
 
+        #region CurrentFeedItem
         private FeedModel _currentFeedItem;
         public FeedModel CurrentFeedItem
         {
@@ -32,7 +36,9 @@ namespace Tilegram.Feature.PhoneFeed
                 OnPropertyChanged();
             }
         }
+        #endregion
 
+        #region CurrentIndex
         private int _currentIndex;
         public int CurrentIndex
         {
@@ -47,6 +53,7 @@ namespace Tilegram.Feature.PhoneFeed
                 OnPropertyChanged();
             }
         }
+        #endregion
 
         public void LoadNext()
         {
@@ -174,27 +181,34 @@ namespace Tilegram.Feature.PhoneFeed
                 CurrentIndex = 0;
         }
 
+        public void OpenMyProfile()
+        {
+            NavigationService.Instance.NavigateTo(AppRoutes.Profile);
+        }
+
         // Cargar datos desde API
         public async Task LoadFeedItemsAsync()
         {
+            await Task.Delay(1);
+            LoadCurrentFeedItem();
             // Tu lógica para cargar desde la API de Instagram
-            var feedService = Light.UWP.Services.IoC.Container.Instance.Resolve<FeedService>();
-            if (feedService == null)
-                return;
+            //var feedService = Light.UWP.Services.IoC.Container.Instance.Resolve<FeedService>();
+            //if (feedService == null)
+            //    return;
 
-            var userFeedEither = await feedService.UserFeed();
-            userFeedEither.Match(ex =>
-            {
+            //var userFeedEither = await feedService.UserFeed();
+            //userFeedEither.Match(ex =>
+            //{
 
-            }, items =>
-            {
-                FeedItems = new ObservableCollection<FeedModel>();
-                foreach (var item in items)
-                    FeedItems.Add(GetFeedItem(item));
+            //}, items =>
+            //{
+            //    FeedItems = new ObservableCollection<FeedModel>();
+            //    foreach (var item in items)
+            //        FeedItems.Add(GetFeedItem(item));
 
-                if (FeedItems.Count > 0)
-                    CurrentIndex = 0;
-            });
+            //    if (FeedItems.Count > 0)
+            //        CurrentIndex = 0;
+            //});
         }
 
         private FeedModel GetFeedItem(FeedItem item)

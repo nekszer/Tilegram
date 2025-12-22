@@ -2,12 +2,12 @@
 using Light.UWP.Services.Navigation;
 using System;
 using Tilegram.Feature.Authentication;
+using Tilegram.Feature.PhoneFeed;
 using Tilegram.Feature.Profile;
 using Tilegram.Services.Authentication;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Storage;
-using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -88,8 +88,8 @@ namespace Tilegram
 
             var routeService = RouteService.Current;
             routeService.Add<LoginPage>(AppRoutes.Login, needAuth);
-            routeService.Add<Feature.Feed.FeedPage>(AppRoutes.Profile, !needAuth);
-            routeService.Add<Feature.PhoneFeed.PhoneFeedPage>("/test", true);
+            routeService.Add<PhoneFeedPage>("/test", !needAuth);
+            routeService.Add<ProfilePage>(AppRoutes.Profile);
 
             // routeService.Add<Feature.Test.TestPage>("/test", true);
         }
