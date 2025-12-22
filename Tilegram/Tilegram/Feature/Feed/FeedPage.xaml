@@ -76,7 +76,7 @@
                                     <StackPanel Grid.Column="2" 
                                                     Orientation="Horizontal"
                                                     VerticalAlignment="Center">
-                                        <!-- Verificado -->
+                                         <!-- Verificado -->
                                         <FontIcon Glyph="&#xE73E;" 
                                                       FontFamily="Segoe MDL2 Assets"
                                                       Foreground="#3897F0"
@@ -128,13 +128,13 @@
                                         <SymbolIcon Symbol="Comment"/>
                                     </Button>
 
-                                    <!-- Share Button -->
+                                     <!-- Share Button -->
                                     <Button x:Name="ShareButton" Click="ShareButton_Click"
                                                 Style="{StaticResource IconButtonStyle}" Foreground="{ThemeResource ButtonForegroundThemeBrush}">
                                         <SymbolIcon Symbol="Share"/>
                                     </Button>
 
-                                    <!-- Save Button -->
+                                     <!-- Save Button -->
                                     <ToggleButton x:Name="SaveButton"
                                                   IsChecked="{x:Bind HasSaved, Mode=TwoWay}"
                                                   Checked="SaveButton_Checked"
@@ -153,7 +153,7 @@
                                                Margin="12,0,12,4"
                                                FontSize="14"/>
 
-                                <!-- CAPTION -->
+                                 <!-- CAPTION -->
                                 <RichTextBlock Grid.Row="4" 
                                                    Padding="12,0,12,8">
                                     <Paragraph>
@@ -165,7 +165,7 @@
                                     </Paragraph>
                                 </RichTextBlock>
 
-                                <!-- VER TODOS LOS COMENTARIOS -->
+                                 <!-- VER TODOS LOS COMENTARIOS -->
                                 <Button Grid.Row="5"
                                             Content="{x:Bind CommentsCountFormatted, Mode=OneWay, Converter={StaticResource CommentsCountConverter}}"
                                             Click="ViewComments_Click"

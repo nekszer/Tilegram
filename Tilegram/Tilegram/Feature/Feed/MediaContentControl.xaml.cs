@@ -1,6 +1,5 @@
 ﻿using System;
 using Windows.Media.Core;
-using Windows.Media.Playback;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -27,8 +26,6 @@ namespace Tilegram.Feature.Feed
             this.InitializeComponent();
             this.Loaded += MediaContentControl_Loaded;
             this.Unloaded += MediaContentControl_Unloaded;
-
-            // NO acceder a Window.Current aquí - puede causar el error 0xC000027B
         }
 
         private void MediaContentControl_Loaded(object sender, RoutedEventArgs e)
@@ -101,12 +98,12 @@ namespace Tilegram.Feature.Feed
             System.Diagnostics.Debug.WriteLine($"Calculated: Width={availableWidth}, Height={_calculatedHeight}");
         }
 
-        private static void OnFeedModelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static async void OnFeedModelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var control = (MediaContentControl)d;
 
             // Ejecutar en el contexto de UI
-            control.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            await control.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
             {
                 control.UpdateMediaContent();
             });
@@ -133,23 +130,16 @@ namespace Tilegram.Feature.Feed
                 {
                     // VIDEO
                     var mediaPlayerElement = CreateVideoPlayer(FeedItem);
+                    if (mediaPlayerElement == null)
+                        throw new Exception("Error al cargar el video");
+
                     MediaContainer.Children.Add(mediaPlayerElement);
                 }
                 else if (FeedItem.IsCarousel)
                 {
-                    try
-                    {
-                        // CAROUSEL
-                        var flipView = CreateCarouselView(FeedItem);
-                        MediaContainer.Children.Add(flipView);
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"Error creating carousel: {ex.Message}");
-                        // Fallback a imagen simple
-                        var image = CreateImageWithSource(FeedItem.MediaUrl);
-                        MediaContainer.Children.Add(image);
-                    }
+                    // CAROUSEL
+                    var flipView = CreateCarouselView(FeedItem);
+                    MediaContainer.Children.Add(flipView);
                 }
             }
             catch (Exception ex)
@@ -204,41 +194,28 @@ namespace Tilegram.Feature.Feed
 
         private MediaPlayerElement CreateVideoPlayer(FeedModel feedItem)
         {
-            var mediaPlayerElement = new MediaPlayerElement
-            {
-                Height = _calculatedHeight,
-                AreTransportControlsEnabled = true,
-                AutoPlay = false,
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-                VerticalAlignment = VerticalAlignment.Top
-            };
-
             try
             {
+                var mediaPlayerElement = new MediaPlayerElement
+                {
+                    Height = _calculatedHeight,
+                    AreTransportControlsEnabled = true,
+                    AutoPlay = false,
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    VerticalAlignment = VerticalAlignment.Top
+                };
                 if (!string.IsNullOrEmpty(feedItem.MediaUrl))
                 {
                     mediaPlayerElement.Source = MediaSource.CreateFromUri(new Uri(feedItem.MediaUrl));
                 }
+                return mediaPlayerElement;
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error creating video source: {ex.Message}");
-
-                // Fallback a thumbnail
-                var fallbackGrid = new Grid();
-                var fallbackImage = new Image
-                {
-                    Source = new BitmapImage(new Uri(feedItem.ThumbnailUrl ?? feedItem.MediaUrl)),
-                    Stretch = Stretch.UniformToFill,
-                    Height = _calculatedHeight
-                };
-                fallbackGrid.Children.Add(fallbackImage);
-
-                // No devolver MediaPlayerElement si falló, devolver Grid con imagen
-                return new MediaPlayerElement(); // O manejar de otra forma
             }
 
-            return mediaPlayerElement;
+            return null;
         }
 
         private FlipView CreateCarouselView(FeedModel feedItem)

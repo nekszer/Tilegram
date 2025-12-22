@@ -48,8 +48,8 @@ namespace Tilegram.Feature.Feed
                 var feedData = await feedService.UserFeed();
                 feedData.Match(OnUserFeedError, success =>
                 {
-                    // foreach (var item in success)
-                        FeedItems.Add(GetFeedItem(success.FirstOrDefault()));
+                    foreach (var item in success.Where(s => !s.IsVideo))
+                        FeedItems.Add(GetFeedItem(item));
                 });
             }
             finally
