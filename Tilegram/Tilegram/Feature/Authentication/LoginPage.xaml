@@ -2,7 +2,6 @@
     x:Class="Tilegram.Feature.Authentication.LoginPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:Tilegram.Feature.Authentication"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
@@ -33,70 +32,24 @@
         </Grid.RowDefinitions>
 
         <!-- Encabezado: Selección de idioma (simulado) -->
-        <TextBlock Grid.Row="0"
-               Text="English (India) &#xE70D;"
-               Foreground="#c4c4c4"
-               FontSize="14"
-               HorizontalAlignment="Center"
-               Margin="0,12,0,0" Visibility="Collapsed"/>
+        <TextBlock Grid.Row="0" Text="English (India) &#xE70D;" Foreground="#c4c4c4" FontSize="14" HorizontalAlignment="Center" Margin="0,12,0,0" Visibility="Collapsed"/>
 
         <!-- Contenedor principal con logo, campos y botón -->
-        <StackPanel Grid.Row="1"
-                VerticalAlignment="Center"
-                HorizontalAlignment="Center"
-                Width="280">
-
-            <!-- Logo de Instagram -->
-            <!-- Nota: Debes agregar una imagen llamada 'InstagramLogo.png' a tu proyecto -->
-            <Image Source="/Assets/Other/iglogo.png"
-               Width="160"
-               Height="80"
-               HorizontalAlignment="Center"
-               Stretch="Uniform"/>
-
-            <!-- Campo de Usuario/Email/Teléfono -->
-            <TextBox x:Name="UsernameTextBox"
-                Header="Phone number, email or username"
-                PlaceholderText="Enter your username, email, or phone"  Margin="0,12,0,0"
-                    Style="{StaticResource InstagramTextBoxStyle}"/>
-
-            <!-- Campo de Contraseña -->
-            <PasswordBox x:Name="PasswordBox"
-                     Header="Password"
-                     PlaceholderText="Enter your password" Margin="0,12,0,0"
-                         Style="{StaticResource InstagramPasswordBoxStyle}" />
-
-            <!-- Botón de Inicio de Sesión -->
-            <Button x:Name="LoginButton"
-                Content="Log In"
-                Background="#3897f0"
-                Foreground="White"
-                FontSize="14"
-                Height="44"
-                HorizontalAlignment="Stretch"
-                Click="LoginButton_Click" Margin="0,12,0,0"/>
-
+        <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Width="280">
+            <Image Source="/Assets/Other/iglogo.png" Width="160" Height="80" HorizontalAlignment="Center" Stretch="Uniform"/>
+            <TextBox x:Name="UsernameTextBox" Header="Phone number, email or username" PlaceholderText="Enter your username, email, or phone"  Margin="0,12,0,0" Style="{StaticResource InstagramTextBoxStyle}"/>
+            <PasswordBox x:Name="PasswordBox" Header="Password" PlaceholderText="Enter your password" Margin="0,12,0,0" Style="{StaticResource InstagramPasswordBoxStyle}" />
+            <Button x:Name="LoginButton" Content="Log In" Background="#3897f0" Foreground="White" FontSize="14" Height="44" HorizontalAlignment="Stretch" Click="LoginButton_Click" Margin="0,12,0,0"/>
         </StackPanel>
 
         <!-- Línea divisoria y pie de página -->
-        <Grid Grid.Row="2"
-          VerticalAlignment="Bottom">
+        <Grid Grid.Row="2" VerticalAlignment="Bottom">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-
-            <Rectangle Grid.Row="0"
-                   Fill="#e2e2e2"
-                   Height="1.5"
-                   Margin="0,0,0,15"/>
-
-            <TextBlock Grid.Row="1"
-                   HorizontalAlignment="Center"
-                   FontSize="12"
-                   Margin="0,0,0,14">
-                <Run Foreground="#c4c4c4" Text="@AlienSoftTech "/>
-            </TextBlock>
+            <Rectangle Grid.Row="0" Fill="#e2e2e2" Height="1.5" Margin="0,0,0,15"/>
+            <Button Grid.Row="1" HorizontalAlignment="Center" FontSize="12" Margin="0,0,0,14" Content="@AlienSoftTech" Background="Transparent" />
         </Grid>
     </Grid>
 </Page>

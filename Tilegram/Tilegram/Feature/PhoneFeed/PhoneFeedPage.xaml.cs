@@ -1,9 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Tilegram.Feature.Feed;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 
 // La plantilla de elemento Página en blanco está documentada en https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -137,7 +139,7 @@ namespace Tilegram.Feature.PhoneFeed
 
         private void LikeButton_Checked(object sender, RoutedEventArgs e)
         {
-            if(sender is ToggleButton toggleButton && toggleButton.DataContext is FeedModel item)
+            if (sender is ToggleButton toggleButton && toggleButton.DataContext is FeedModel item)
             {
 
             }
@@ -213,5 +215,47 @@ namespace Tilegram.Feature.PhoneFeed
                 }
             }
         }
+
+        private double _pullDistance = 0;
+        private const double RefreshThreshold = 80; // píxeles
+
+        private void FeedScrollViewer_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            var sv = (ScrollViewer)sender;
+
+            if (sv.VerticalOffset <= 0 && e.Delta.Translation.Y > 0)
+            {
+                _pullDistance += e.Delta.Translation.Y;
+
+                // Normaliza entre 0 y 1
+                double progress = Math.Min(_pullDistance / RefreshThreshold, 1.0);
+
+                RefreshIndicator.IsActive = true;
+                RefreshIndicator.Opacity = progress;
+                RefreshIndicator.RenderTransform = new ScaleTransform
+                {
+                    ScaleX = 0.5 + 0.5 * progress,
+                    ScaleY = 0.5 + 0.5 * progress
+                };
+            }
+        }
+
+        private async void FeedScrollViewer_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            if (_pullDistance > RefreshThreshold)
+            {
+                RefreshIndicator.IsActive = true;
+                
+                // Ejecuta tu refresco
+                await ViewModel.LoadFeedItemsAsync();
+            }
+
+            // Reset
+            _pullDistance = 0;
+            RefreshIndicator.Opacity = 0;
+            RefreshIndicator.IsActive = false;
+        }
+
+
     }
 }

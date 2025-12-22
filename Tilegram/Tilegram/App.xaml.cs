@@ -2,12 +2,14 @@
 using Light.UWP.Services.Navigation;
 using System;
 using Tilegram.Feature.Authentication;
+using Tilegram.Feature.Feed;
 using Tilegram.Feature.PhoneFeed;
 using Tilegram.Feature.Profile;
 using Tilegram.Services.Authentication;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Storage;
+using Windows.System.Profile;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -19,6 +21,8 @@ namespace Tilegram
         public static string Login = "/login";
 
         public static string Profile = "/profile";
+
+        public static string Feed = "/feed";
     }
 
     /// <summary>
@@ -35,50 +39,39 @@ namespace Tilegram
             this.InitializeComponent();
             this.Suspending += OnSuspending;
 
-            this.UnhandledException += App_UnhandledException;
-
             RegisterServices();
             RegisterRoutes();
-        }
-
-        private void App_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            ApplicationData.Current.LocalSettings.Values["ExceptionMessage"] = e.Exception.Message;
-            ApplicationData.Current.LocalSettings.Values["ExceptionStacktrace"] = e.Exception.StackTrace;
         }
 
         private void RegisterServices()
         {
             var container = Container.Instance;
 
-            ApplicationData.Current.LocalSettings.Values["ApiBaseUrl"] = "https://a47a22cabd79.ngrok-free.app/";
-            // ApplicationData.Current.LocalSettings.Values["AccessToken"] = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYyMjA0NDQ2NDcxLCJuYW1lIjoiU29mw61hIENhc3RpbGxvIiwidXNlck5hbWUiOiJiY2FzX3NvZmlhIiwicGljdHVyZSI6Imh0dHBzOi8vaW5zdGFncmFtLmZtZXgxMC00LmZuYS5mYmNkbi5uZXQvdi90NTEuMjg4NS0xOS81MzcyNTIyMTFfMTc5MjAwMjE2NTkwNzg0NzJfNzg3NjM3Njg5ODM5NzQxOTg3MV9uLmpwZz9zdHA9ZHN0LWpwZ19lMF9zMTUweDE1MF90dDYmZWZnPWV5SjJaVzVqYjJSbFgzUmhaeUk2SW5CeWIyWnBiR1ZmY0dsakxtUnFZVzVuYnk0eE1EZ3dMbU15SW4wJl9uY19odD1pbnN0YWdyYW0uZm1leDEwLTQuZm5hLmZiY2RuLm5ldCZfbmNfY2F0PTEwNCZfbmNfb2M9UTZjWjJRR25pWk5VVUdBMWdRd0s1NVgtSldDSktMTWdZN1BnNG9zOUE2SVNfZE1SWXpJQ3h0NmtvRk1HTWtTM3M3UW9ZN00mX25jX29oYz13QkV1a3dNdEV6MFE3a052d0habThIbyZlZG09QUFBQUFBQUJBQUFBJmNjYj03LTUmaWdfY2FjaGVfa2V5PUdIUFJCU0JJVDFzdEtxby1BRjg1RXVvT2cwNXRibU5EQVFBQjE1MDE1MDBqLWNjYjctNSZvaD0wMF9BZmxiUW1uNkpqdXBzZXAzcFJFOTRhUWxkQ2VhWTNZbXlTYzNRa0lLQlMxMHpnJm9lPTY5NEJCOTcyJl9uY19zaWQ9MzI4MjU5IiwiaWF0IjoxNzY2MTkzNzUxLCJleHAiOjE3Njg3ODU3NTF9.VxvzEAuLN2kUo3mcLffDuoz5TIdZa-KZjTRSwXjUhz4";
+            var jwtKey = "304e8693f44b4b0fcb17fd256187d65fdb16df8c9adc12338e4693e68438ca9b";
+            container.Register(ioc => new JwtService(jwtKey));
+
+            AppSettings.ApiBaseUrl = "https://86462722aa86.ngrok-free.app/";
+            // AppSettings.AccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYyMjA0NDQ2NDcxLCJuYW1lIjoiU29mw61hIENhc3RpbGxvIiwidXNlck5hbWUiOiJiY2FzX3NvZmlhIiwicGljdHVyZSI6Imh0dHBzOi8vaW5zdGFncmFtLmZtZXgxMC00LmZuYS5mYmNkbi5uZXQvdi90NTEuMjg4NS0xOS81MzcyNTIyMTFfMTc5MjAwMjE2NTkwNzg0NzJfNzg3NjM3Njg5ODM5NzQxOTg3MV9uLmpwZz9zdHA9ZHN0LWpwZ19lMF9zMTUweDE1MF90dDYmZWZnPWV5SjJaVzVqYjJSbFgzUmhaeUk2SW5CeWIyWnBiR1ZmY0dsakxtUnFZVzVuYnk0eE1EZ3dMbU15SW4wJl9uY19odD1pbnN0YWdyYW0uZm1leDEwLTQuZm5hLmZiY2RuLm5ldCZfbmNfY2F0PTEwNCZfbmNfb2M9UTZjWjJRR25pWk5VVUdBMWdRd0s1NVgtSldDSktMTWdZN1BnNG9zOUE2SVNfZE1SWXpJQ3h0NmtvRk1HTWtTM3M3UW9ZN00mX25jX29oYz13QkV1a3dNdEV6MFE3a052d0habThIbyZlZG09QUFBQUFBQUJBQUFBJmNjYj03LTUmaWdfY2FjaGVfa2V5PUdIUFJCU0JJVDFzdEtxby1BRjg1RXVvT2cwNXRibU5EQVFBQjE1MDE1MDBqLWNjYjctNSZvaD0wMF9BZmxiUW1uNkpqdXBzZXAzcFJFOTRhUWxkQ2VhWTNZbXlTYzNRa0lLQlMxMHpnJm9lPTY5NEJCOTcyJl9uY19zaWQ9MzI4MjU5IiwiaWF0IjoxNzY2MTkzNzUxLCJleHAiOjE3Njg3ODU3NTF9.VxvzEAuLN2kUo3mcLffDuoz5TIdZa-KZjTRSwXjUhz4";
 
             container.Register(ioc => 
             {
-                var localSettings = ApplicationData.Current.LocalSettings;
-                var apiBaseUrl = localSettings.Values["ApiBaseUrl"] as string;
+                var apiBaseUrl = AppSettings.ApiBaseUrl;
                 return new Services.Authentication.AuthenticationService(apiBaseUrl);
             });
 
             container.Register(ioc =>
             {
-                var localSettings = ApplicationData.Current.LocalSettings;
-                var apiBaseUrl = localSettings.Values["ApiBaseUrl"] as string;
-                var accessToken = localSettings.Values["AccessToken"] as string;
+                var apiBaseUrl = AppSettings.ApiBaseUrl;
+                var accessToken = AppSettings.AccessToken;
                 return new Services.Profile.ProfileService(apiBaseUrl, accessToken, ioc.Resolve<JwtService>());
             });
 
             container.Register(ioc =>
             {
-                var localSettings = ApplicationData.Current.LocalSettings;
-                var apiBaseUrl = localSettings.Values["ApiBaseUrl"] as string;
-                var accessToken = localSettings.Values["AccessToken"] as string;
+                var apiBaseUrl = AppSettings.ApiBaseUrl;
+                var accessToken = AppSettings.AccessToken;
                 return new Services.Feed.FeedService(apiBaseUrl, accessToken, ioc.Resolve<JwtService>());
             });
-
-            var jwtKey = "304e8693f44b4b0fcb17fd256187d65fdb16df8c9adc12338e4693e68438ca9b";
-            container.Register(ioc => new JwtService(jwtKey));
         }
 
         private void RegisterRoutes()
@@ -88,10 +81,24 @@ namespace Tilegram
 
             var routeService = RouteService.Current;
             routeService.Add<LoginPage>(AppRoutes.Login, needAuth);
-            routeService.Add<PhoneFeedPage>("/test", !needAuth);
-            routeService.Add<ProfilePage>(AppRoutes.Profile);
 
-            // routeService.Add<Feature.Test.TestPage>("/test", true);
+            string deviceFamily = AnalyticsInfo.VersionInfo.DeviceFamily;
+
+            // Es PC, laptop o tablet con Windows 10
+            if (deviceFamily == "Windows.Desktop")
+            {
+                //routeService.Add<FeedPage>(AppRoutes.Feed, !needAuth);
+            }
+
+            routeService.Add<PhoneFeedPage>(AppRoutes.Feed, !needAuth);
+
+            // Es teléfono con Windows 10 Mobile
+            if (deviceFamily == "Windows.Mobile")
+            {
+                // routeService.Add<PhoneFeedPage>(AppRoutes.Feed, !needAuth);
+            }
+
+            routeService.Add<ProfilePage>(AppRoutes.Profile);
         }
 
         #region App

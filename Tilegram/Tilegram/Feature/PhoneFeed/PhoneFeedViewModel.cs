@@ -55,6 +55,32 @@ namespace Tilegram.Feature.PhoneFeed
         }
         #endregion
 
+        #region UserFullName
+        private string userFullName;
+        public string UserFullName
+        {
+            get => userFullName;
+            set
+            {
+                userFullName = value;
+                OnPropertyChanged();
+            }
+        }
+        #endregion
+
+        #region UserPicture
+        private string userPicture;
+        public string UserPicture
+        {
+            get => userPicture;
+            set
+            {
+                userPicture = value;
+                OnPropertyChanged();
+            }
+        }
+        #endregion
+
         public void LoadNext()
         {
             if (FeedItems != null && CurrentIndex < FeedItems.Count - 1)
@@ -189,7 +215,7 @@ namespace Tilegram.Feature.PhoneFeed
         // Cargar datos desde API
         public async Task LoadFeedItemsAsync()
         {
-            await Task.Delay(1);
+            await Task.Delay(1000);
             LoadCurrentFeedItem();
             // Tu lógica para cargar desde la API de Instagram
             //var feedService = Light.UWP.Services.IoC.Container.Instance.Resolve<FeedService>();

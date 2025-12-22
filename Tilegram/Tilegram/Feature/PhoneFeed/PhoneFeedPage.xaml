@@ -16,192 +16,198 @@
         <Local:PhoneFeedViewModel />
     </Page.DataContext>
 
-    <Page.Resources>
-        <Converters:AddOneConverter x:Key="AddOneConverter" />
-    </Page.Resources>
-
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-
-        <Grid Padding="12">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <TextBlock Grid.Column="0" Text="Tilegram" Style="{StaticResource SubheaderTextBlockStyle}" />
-            <TextBlock Text="Daniel" Grid.Column="1" VerticalAlignment="Center" Margin="12,0" />
-            <Ellipse Grid.Column="2" Width="30" Height="30" Stroke="{ThemeResource SystemControlForegroundAccentBrush}" StrokeThickness="1"
-                     x:Name="EllipseImageProfile" Tapped="EllipseImageProfile_Tapped" >
-                <Ellipse.Fill>
-                    <ImageBrush ImageSource="https://lipsum.app/id/1/800x1000" />
-                </Ellipse.Fill>
-            </Ellipse>
-        </Grid>
-
-        <!-- Tu contenido del post actual -->
-        <Grid Grid.Row="1" VerticalAlignment="Top">
+    <ScrollViewer x:Name="FeedScrollViewer"
+            ManipulationMode="TranslateY"
+            ManipulationDelta="FeedScrollViewer_ManipulationDelta"
+            ManipulationCompleted="FeedScrollViewer_ManipulationCompleted"
+                  VerticalScrollBarVisibility="Hidden">
+        <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <!-- CONTENIDO MULTIMEDIA -->
-            <ContentControl Grid.Row="0" HorizontalContentAlignment="Stretch" Content="{Binding CurrentFeedItem, Mode=OneWay}">
-                <ContentControl.ContentTemplate>
-                    <DataTemplate x:DataType="Feed:FeedModel">
-                        <Feed:MediaContentControl FeedItem="{x:Bind Mode=OneWay}"/>
-                    </DataTemplate>
-                </ContentControl.ContentTemplate>
-            </ContentControl>
-
-            <!-- Overlay para mejor contraste -->
-            <Rectangle Grid.Row="0" VerticalAlignment="Top" Height="50" Fill="Black" Opacity="0.5" />
-
-            <!-- Header Post -->
-            <Grid Grid.Row="0" VerticalAlignment="Top" x:Name="GridHeader" Margin="0,6,0,0">
+            <Grid Padding="12">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-
-                <!-- Foto de perfil -->
-                <Ellipse Grid.Column="0" Width="32" Height="32" Margin="12,0,12,0">
+                <TextBlock Grid.Column="0" Text="Tilegram" Style="{StaticResource SubheaderTextBlockStyle}" />
+                <TextBlock Text="{Binding UserFullName}" Grid.Column="1" VerticalAlignment="Center" Margin="12,0" />
+                <Ellipse Grid.Column="2" Width="30" Height="30" Stroke="{ThemeResource SystemControlForegroundAccentBrush}" StrokeThickness="1"
+                    x:Name="EllipseImageProfile" Tapped="EllipseImageProfile_Tapped" >
                     <Ellipse.Fill>
-                        <ImageBrush ImageSource="{Binding CurrentFeedItem.User.ProfilePictureUrl, Mode=OneWay}" Stretch="UniformToFill"/>
+                        <ImageBrush ImageSource="{Binding UserPicture}" />
                     </Ellipse.Fill>
                 </Ellipse>
-
-                <!-- Información del usuario -->
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <TextBlock Text="{Binding CurrentFeedItem.User.Username, Mode=OneWay}" FontWeight="SemiBold" FontSize="14"/>
-                    <TextBlock Text="{Binding CurrentFeedItem.User.FullName, Mode=OneWay}" FontSize="12"/>
-                </StackPanel>
-
-                <!-- Tiempo y menú -->
-                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,12,0">
-                    <!-- Verificado -->
-                    <FontIcon Glyph="&#xE73E;" FontFamily="Segoe MDL2 Assets" FontSize="16" 
-                                  Visibility="{Binding CurrentFeedItem.User.IsVerified, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" 
-                                  Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding CurrentFeedItem.TimeAgo, Mode=OneWay}" FontSize="12" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                    <Button Click="MoreOptions_Click" DataContext="{Binding CurrentFeedItem}">
-                        <SymbolIcon Symbol="More"/>
-                    </Button>
-                </StackPanel>
             </Grid>
 
-            <!-- Like, Comments, Download, Flag -->
-            <Grid VerticalAlignment="Bottom">
+            <!-- Indicador de refresco -->
+            <ProgressRing Grid.Row="1" x:Name="RefreshIndicator" Width="30" Height="30" Opacity="0" HorizontalAlignment="Center" />
+
+            <!-- Tu contenido del post actual -->
+            <Grid Grid.Row="2" VerticalAlignment="Top">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <Rectangle Grid.Row="0" Grid.RowSpan="2" VerticalAlignment="Stretch" Fill="Black" Opacity="0.5" />
+                <!-- CONTENIDO MULTIMEDIA -->
+                <ContentControl Grid.Row="0" HorizontalContentAlignment="Stretch" Content="{Binding CurrentFeedItem, Mode=OneWay}">
+                    <ContentControl.ContentTemplate>
+                        <DataTemplate x:DataType="Feed:FeedModel">
+                            <Feed:MediaContentControl FeedItem="{x:Bind Mode=OneWay}"/>
+                        </DataTemplate>
+                    </ContentControl.ContentTemplate>
+                </ContentControl>
 
-                <!--ACCIONES (Like, Comment, Share, Save)-->
-                <Grid Grid.Row="0">
+                <!-- Overlay para mejor contraste -->
+                <Rectangle Grid.Row="0" VerticalAlignment="Top" Height="50" Fill="Black" Opacity="0.5" />
+
+                <!-- Header Post -->
+                <Grid Grid.Row="0" VerticalAlignment="Top" x:Name="GridHeader" Margin="0,6,0,0">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <ToggleButton Grid.Column="0" x:Name="LikeButton" IsChecked="{Binding CurrentFeedItem.HasLiked, Mode=TwoWay}"
-                                      Checked="LikeButton_Checked" Unchecked="LikeButton_Unchecked" Style="{StaticResource IconToggleButtonStyle}" Foreground="{ThemeResource ButtonForegroundThemeBrush}"
-                                      DataContext="{Binding CurrentFeedItem}">
-                        <SymbolIcon x:Name="LikeIcon" Symbol="Like" />
-                    </ToggleButton>
 
-                    <!--Comment Button-->
-                    <Button Grid.Column="1" x:Name="CommentButton" Click="CommentButton_Click" Style="{StaticResource IconButtonStyle}" Foreground="{ThemeResource ButtonForegroundThemeBrush}"
-                                DataContext="{Binding CurrentFeedItem}">
-                        <SymbolIcon Symbol="Comment"/>
-                    </Button>
+                    <!-- Foto de perfil -->
+                    <Ellipse Grid.Column="0" Width="32" Height="32" Margin="12,0,12,0">
+                        <Ellipse.Fill>
+                            <ImageBrush ImageSource="{Binding CurrentFeedItem.User.ProfilePictureUrl, Mode=OneWay}" Stretch="UniformToFill"/>
+                        </Ellipse.Fill>
+                    </Ellipse>
 
-                    <!--Share Button-->
-                    <Button Grid.Column="2" x:Name="ShareButton" Click="ShareButton_Click" Style="{StaticResource IconButtonStyle}" Foreground="{ThemeResource ButtonForegroundThemeBrush}"
-                                DataContext="{Binding CurrentFeedItem}">
-                        <SymbolIcon Symbol="Download"/>
-                    </Button>
-
-                    <!--Save Button-->
-                    <ToggleButton Grid.Column="4" x:Name="SaveButton" IsChecked="{Binding CurrentFeedItem.HasSaved, Mode=TwoWay}" 
-                                      Checked="SaveButton_Checked" Unchecked="SaveButton_Unchecked" HorizontalAlignment="Right"
-                                      Style="{StaticResource IconToggleButtonStyle}" Foreground="{ThemeResource ButtonForegroundThemeBrush}"
-                                      DataContext="{Binding CurrentFeedItem}">
-                        <SymbolIcon x:Name="SaveIcon" Symbol="Flag"/>
-                    </ToggleButton>
-                </Grid>
-
-                <StackPanel Grid.Row="1">
-                    <StackPanel Orientation="Horizontal">
-                        <!-- LIKES COUNT -->
-                        <TextBlock Margin="12,0,12,4" FontSize="14">
-                                <Run Text="{Binding CurrentFeedItem.LikesCountFormatted, Mode=OneWay}" FontWeight="SemiBold" />
-                                <Run Text=" " />
-                                <Run Text="Likes" />
-                        </TextBlock>
+                    <!-- Información del usuario -->
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding CurrentFeedItem.User.Username, Mode=OneWay}" FontWeight="SemiBold" FontSize="14"/>
+                        <TextBlock Text="{Binding CurrentFeedItem.User.FullName, Mode=OneWay}" FontSize="12"/>
                     </StackPanel>
 
+                    <!-- Tiempo y menú -->
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,12,0">
+                        <!-- Verificado -->
+                        <FontIcon Glyph="&#xE73E;" FontFamily="Segoe MDL2 Assets" FontSize="16" 
+                                Visibility="{Binding CurrentFeedItem.User.IsVerified, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" 
+                                Margin="0,0,8,0"/>
+                        <TextBlock Text="{Binding CurrentFeedItem.TimeAgo, Mode=OneWay}" FontSize="12" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                        <Button Click="MoreOptions_Click" DataContext="{Binding CurrentFeedItem}">
+                            <SymbolIcon Symbol="More"/>
+                        </Button>
+                    </StackPanel>
+                </Grid>
 
-                    <!-- CAPTION -->
-                    <TextBlock Text="{Binding CurrentFeedItem.User.Username, Mode=OneWay}" Padding="12,0,12,8" FontWeight="Bold" />
+                <!-- Like, Comments, Download, Flag -->
+                <Grid VerticalAlignment="Bottom">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
 
-                    <RichTextBlock Padding="12" MaxLines="2" IsTextSelectionEnabled="False" x:Name="Caption" Tapped="Caption_Tapped"
-                                       DataContext="{Binding CurrentFeedItem}">
-                        <Paragraph>
-                            <Run Text="{Binding Caption, Mode=OneWay}" />
-                        </Paragraph>
-                    </RichTextBlock>
+                    <Rectangle Grid.Row="0" Grid.RowSpan="2" VerticalAlignment="Stretch" Fill="Black" Opacity="0.5" />
+
+                    <!--ACCIONES (Like, Comment, Share, Save)-->
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <ToggleButton Grid.Column="0" x:Name="LikeButton" IsChecked="{Binding CurrentFeedItem.HasLiked, Mode=TwoWay}"
+                                    Checked="LikeButton_Checked" Unchecked="LikeButton_Unchecked" Style="{StaticResource IconToggleButtonStyle}" Foreground="{ThemeResource ButtonForegroundThemeBrush}"
+                                    DataContext="{Binding CurrentFeedItem}">
+                            <SymbolIcon x:Name="LikeIcon" Symbol="Like" />
+                        </ToggleButton>
+
+                        <!--Comment Button-->
+                        <Button Grid.Column="1" x:Name="CommentButton" Click="CommentButton_Click" Style="{StaticResource IconButtonStyle}" Foreground="{ThemeResource ButtonForegroundThemeBrush}"
+                            DataContext="{Binding CurrentFeedItem}">
+                            <SymbolIcon Symbol="Comment"/>
+                        </Button>
+
+                        <!--Share Button-->
+                        <Button Grid.Column="2" x:Name="ShareButton" Click="ShareButton_Click" Style="{StaticResource IconButtonStyle}" Foreground="{ThemeResource ButtonForegroundThemeBrush}"
+                            DataContext="{Binding CurrentFeedItem}">
+                            <SymbolIcon Symbol="Download"/>
+                        </Button>
+
+                        <!--Save Button-->
+                        <ToggleButton Grid.Column="4" x:Name="SaveButton" IsChecked="{Binding CurrentFeedItem.HasSaved, Mode=TwoWay}" 
+                                    Checked="SaveButton_Checked" Unchecked="SaveButton_Unchecked" HorizontalAlignment="Right"
+                                    Style="{StaticResource IconToggleButtonStyle}" Foreground="{ThemeResource ButtonForegroundThemeBrush}"
+                                    DataContext="{Binding CurrentFeedItem}">
+                            <SymbolIcon x:Name="SaveIcon" Symbol="Flag"/>
+                        </ToggleButton>
+                    </Grid>
+
+                    <StackPanel Grid.Row="1">
+                        <StackPanel Orientation="Horizontal">
+                            <!-- LIKES COUNT -->
+                            <TextBlock Margin="12,0,12,4" FontSize="14">
+                            <Run Text="{Binding CurrentFeedItem.LikesCountFormatted, Mode=OneWay}" FontWeight="SemiBold" />
+                            <Run Text=" " />
+                            <Run Text="Likes" />
+                            </TextBlock>
+                        </StackPanel>
+
+
+                        <!-- CAPTION -->
+                        <TextBlock Text="{Binding CurrentFeedItem.User.Username, Mode=OneWay}" Padding="12,0,12,8" FontWeight="Bold" />
+
+                        <RichTextBlock Padding="12" MaxLines="2" IsTextSelectionEnabled="False" x:Name="Caption" Tapped="Caption_Tapped"
+                                    DataContext="{Binding CurrentFeedItem}">
+                            <Paragraph>
+                                <Run Text="{Binding Caption, Mode=OneWay}" />
+                            </Paragraph>
+                        </RichTextBlock>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Comentarios y Fecha de actualizacion -->
+                <Grid Grid.Row="4" Margin="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <!-- VER TODOS LOS COMENTARIOS -->
+                    <Button Grid.Column="0" Content="{Binding CurrentFeedItem.CommentsCountFormatted, Mode=OneWay, Converter={StaticResource CommentsCountConverter}}"
+                        Click="ViewComments_Click" Style="{StaticResource TextBlockButtonStyle}" HorizontalAlignment="Left" Margin="12,0,12,8"
+                        DataContext="{Binding CurrentFeedItem}" />
+
+                    <!-- FECHA -->
+                    <TextBlock Grid.Column="1" Text="{Binding CurrentFeedItem.TakenAt, Mode=OneWay, Converter={StaticResource DateTimeConverter}}"
+                            FontSize="10" Margin="12,0, 12,12" HorizontalAlignment="Right" />
+                </Grid>
+            </Grid>
+
+            <!-- Indicadores de navegación -->
+            <Grid Grid.Row="2" VerticalAlignment="Bottom" Margin="0,0,0,20" HorizontalAlignment="Center">
+                <StackPanel Orientation="Horizontal" CornerRadius="20" Padding="15,8" Background="{ThemeResource ButtonForegroundThemeBrush}">
+                    <!-- Botón anterior -->
+                    <Button x:Name="PrevButton" Click="PrevButton_Click" Style="{StaticResource IconButtonStyle}" Margin="0,0,10,0" Foreground="{ThemeResource AppBarBackgroundThemeBrush}">
+                        <SymbolIcon Symbol="Back" />
+                    </Button>
+
+                    <!-- Contador -->
+                    <TextBlock Text="{Binding CurrentIndex, Converter={StaticResource AddOneConverter}}" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" Foreground="{ThemeResource AppBarBackgroundThemeBrush}"/>
+                    <TextBlock Text=" / " FontSize="14" VerticalAlignment="Center" Foreground="{ThemeResource AppBarBackgroundThemeBrush}" />
+                    <TextBlock Text="{Binding FeedItems.Count}" FontSize="14" VerticalAlignment="Center" Foreground="{ThemeResource AppBarBackgroundThemeBrush}"/>
+
+                    <!-- Botón siguiente -->
+                    <Button x:Name="NextButton" Click="NextButton_Click" Style="{StaticResource IconButtonStyle}" Margin="10,0,0,0" Foreground="{ThemeResource AppBarBackgroundThemeBrush}">
+                        <SymbolIcon Symbol="Forward"/>
+                    </Button>
                 </StackPanel>
             </Grid>
-
-            <!-- Comentarios y Fecha de actualizacion -->
-            <Grid Grid.Row="4" Margin="0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <!-- VER TODOS LOS COMENTARIOS -->
-                <Button Grid.Column="0" Content="{Binding CurrentFeedItem.CommentsCountFormatted, Mode=OneWay, Converter={StaticResource CommentsCountConverter}}"
-                            Click="ViewComments_Click" Style="{StaticResource TextBlockButtonStyle}" HorizontalAlignment="Left" Margin="12,0,12,8"
-                            DataContext="{Binding CurrentFeedItem}" />
-
-                <!-- FECHA -->
-                <TextBlock Grid.Column="1" Text="{Binding CurrentFeedItem.TakenAt, Mode=OneWay, Converter={StaticResource DateTimeConverter}}"
-                               FontSize="10" Margin="12,0, 12,12" HorizontalAlignment="Right" />
-            </Grid>
         </Grid>
-
-        <!-- Indicadores de navegación -->
-        <Grid Grid.Row="1" VerticalAlignment="Bottom" Margin="0,0,0,20" HorizontalAlignment="Center">
-            <StackPanel Orientation="Horizontal" CornerRadius="20" Padding="15,8" Background="{ThemeResource ButtonForegroundThemeBrush}">
-                <!-- Botón anterior -->
-                <Button x:Name="PrevButton" Click="PrevButton_Click" Style="{StaticResource IconButtonStyle}" Margin="0,0,10,0" Foreground="{ThemeResource AppBarBackgroundThemeBrush}">
-                    <SymbolIcon Symbol="Back" />
-                </Button>
-
-                <!-- Contador -->
-                <TextBlock Text="{Binding CurrentIndex, Converter={StaticResource AddOneConverter}}" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" Foreground="{ThemeResource AppBarBackgroundThemeBrush}"/>
-                <TextBlock Text=" / " FontSize="14" VerticalAlignment="Center" Foreground="{ThemeResource AppBarBackgroundThemeBrush}" />
-                <TextBlock Text="{Binding FeedItems.Count}" FontSize="14" VerticalAlignment="Center" Foreground="{ThemeResource AppBarBackgroundThemeBrush}"/>
-
-                <!-- Botón siguiente -->
-                <Button x:Name="NextButton" Click="NextButton_Click" Style="{StaticResource IconButtonStyle}" Margin="10,0,0,0" Foreground="{ThemeResource AppBarBackgroundThemeBrush}">
-                    <SymbolIcon Symbol="Forward"/>
-                </Button>
-            </StackPanel>
-        </Grid>
-    </Grid>
+    </ScrollViewer>
 </Page>

@@ -1,11 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using Light.UWP;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Tilegram.Services.Authentication;
-using Windows.Storage;
 
 namespace Tilegram.Services.Feed
 {

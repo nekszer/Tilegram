@@ -119,9 +119,11 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="AppSettings.cs" />
     <Compile Include="Converters\AddOneConverter.cs" />
-    <Compile Include="Converters\ValueToStringConverter.cs" />
-    <Compile Include="Either.cs" />
+    <Compile Include="Converters\CommentsCountConverter.cs" />
+    <Compile Include="Converters\GreaterThanZeroToVisibilityConverter.cs" />
+    <Compile Include="Converters\DateTimeConverter.cs" />
     <Compile Include="Feature\Authentication\LoginPage.xaml.cs">
       <DependentUpon>LoginPage.xaml</DependentUpon>
     </Compile>
@@ -157,6 +159,7 @@
     <None Include="Tilegram_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\Demo\ast.png" />
     <Content Include="Assets\Demo\image.jpg" />
     <Content Include="Assets\Other\iglogo.png" />
     <Content Include="Properties\Default.rd.xml" />

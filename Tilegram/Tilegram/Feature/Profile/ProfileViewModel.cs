@@ -58,7 +58,23 @@ namespace Tilegram.Feature.Profile
 
         public ProfileViewModel()
         {
+            LoadDemoProfile();
+
             LoadProfileData();
+        }
+
+        private void LoadDemoProfile()
+        {
+            Profile = new ProfileData
+            {
+                UserName = "aliensofttech",
+                PostCount = 1,
+                Picture = "/Assets/Demo/ast.png",
+                FullName = "Alien Soft Tech",
+                Description = "WinPhone 10 📱 Software Developer",
+                FollowerCount = 331493,
+                FollowingCount = 93
+            };
         }
 
         private async void LoadHighlights(InstagramProfileService service)

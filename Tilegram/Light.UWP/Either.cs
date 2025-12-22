@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tilegram
+namespace Light.UWP
 {
     public class Either<TLeft, TRight>
     {
@@ -8,7 +8,7 @@ namespace Tilegram
         public TRight RightValue { get; set; }
         public bool Success { get; set; }
 
-        private Either(TLeft left, TRight right, bool success)
+        public Either(TLeft left, TRight right, bool success)
         {
             LeftValue = left;
             RightValue = right;
