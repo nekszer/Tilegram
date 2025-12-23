@@ -1,9 +1,5 @@
-﻿using API.Services;
-using InstagramApiSharp;
-using InstagramApiSharp.API;
-using InstagramApiSharp.API.Builder;
-using InstagramApiSharp.Logger;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Tilegram.Feature.Profile;
 
 namespace Feature.Profile
 {
@@ -11,131 +7,48 @@ namespace Feature.Profile
     [ApiController]
     public class ProfileController : ControllerBase
     {
-        private IWebHostEnvironment Env { get; set; }
-        private JwtService JwtService { get; set; }
+        private IProfileService ProfileService { get; }
 
-        public ProfileController(IWebHostEnvironment env, JwtService jwtService)
+        public ProfileController(IProfileService profileService)
         {
-            Env = env;
-            JwtService = jwtService;
-        }
-
-        private async Task<IInstaApi> LoadSession(string accessToken)
-        {
-            try
-            {
-                var _instaApi = InstaApiBuilder.CreateBuilder()
-                    .UseLogger(new DebugLogger(InstagramApiSharp.Logger.LogLevel.Exceptions))
-                    .Build();
-
-                var payload = JwtService.ReadPayload(accessToken);
-                var userId = payload["sub"];
-
-                var path = Path.Combine(Env.ContentRootPath, @"InstaSessions\" + $"{userId}.json");
-                var jsonSession = await System.IO.File.ReadAllTextAsync(path);
-
-                await _instaApi.LoadStateDataFromStringAsync(jsonSession);
-
-                if (!_instaApi.IsUserAuthenticated)
-                    return null;
-
-                return _instaApi;
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
+            ProfileService = profileService;
         }
 
         [HttpGet("{username}")]
         public async Task<IActionResult> GetProfile([FromHeader] string accessToken, string username)
         {
-            var _instaApi = await LoadSession(accessToken);
-            if (_instaApi == null)
-                return Unauthorized();
-
             try
             {
-                var info = await _instaApi.UserProcessor.GetUserInfoByUsernameAsync(username);
-                if (!(info?.Succeeded ?? false))
-                    return NotFound();
-
-                var value = info.Value;
-
-                return Ok(new ProfileInfo
-                {
-                    FullName = value.FullName,
-                    UserName = value.Username,
-                    Picture = value.ProfilePicUrl,
-                    FollowerCount = value.FollowerCount,
-                    FollowingCount = value.FollowingCount,
-                    PostCount = value.MediaCount,
-                    Description = value.Biography
-                });
+                var meEither = await ProfileService.GetProfileData(username);
+                var profileData = meEither.Map(d => d);
+                return Ok(profileData);
             }
             catch (Exception ex)
             {
+                if(ex is ProfileNotFoundException)
+                    return NotFound("Perfil no encontrado"); 
+
                 return StatusCode(500, ex.Message);
             }
         }
 
         [HttpGet("posts/{username}")]
-        public async Task<IActionResult> GetUserPosts([FromHeader] string accessToken, string username, int page = 5)
+        public async Task<IActionResult> GetUserPosts([FromHeader(Name = "Authorization")] string authorization, string username, int page = 5)
         {
-            var _instaApi = await LoadSession(accessToken);
-            if (_instaApi == null)
-                return Unauthorized();
-
             try
             {
-                var info = await _instaApi.UserProcessor.GetUserInfoByUsernameAsync(username);
-                if (!(info?.Succeeded ?? false))
-                    return NotFound();
-
-                var userMedia = await _instaApi
-                    .UserProcessor
-                    .GetUserMediaAsync(username, PaginationParameters.MaxPagesToLoad(page));
-
-                if (!userMedia.Succeeded)
-                    return BadRequest(userMedia.Info?.Message);
-
-                // Mapear a un DTO más limpio
-                var posts = userMedia.Value.Select(m => new UserMedia
-                {
-                    Id = m.InstaIdentifier,
-                    Code = m.Code,
-                    Text = m.Caption?.Text,
-                    Images = m.Images.Select(s => s.Uri),
-                    LikesCount = m.LikesCount,
-                    CommentsCount = m.CommentsCount,
-                    TakenAt = m.TakenAt
-                });
-
-                var userInfo = info.Value;
-                float allMediaCount = userInfo.MediaCount;
-                float mediaCountPage = posts.Count();
-                var totalPages = 1f;
-
-                if(allMediaCount > mediaCountPage)
-                    totalPages = allMediaCount / mediaCountPage;
-
-                var intTotalPages = (int)totalPages;
-                float floatResidual = totalPages - intTotalPages;
-
-                if (floatResidual > 0.0)
-                    totalPages = intTotalPages + 1;
-
-                return Ok(new
-                {
-                    currentPage = page,
-                    totalPages = totalPages,
-                    totalMedia = allMediaCount,
-                    processMedia = mediaCountPage,
-                    posts = posts
-                });
+                var profilePost = await ProfileService.GetProfilePosts(username, page);
+                var posts = profilePost.Map(p => p);
+                return Ok(posts);
             }
             catch (Exception ex)
             {
+                if (ex is ProfileNotFoundException)
+                    return NotFound("Perfil no encontrado");
+
+                if (ex is ProfileDataNotFoundException)
+                    return NotFound("Error al extraer los post del usuario");
+
                 return StatusCode(500, ex.Message);
             }
         }

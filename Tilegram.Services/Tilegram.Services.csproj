@@ -2,11 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.4</TargetFramework>
-    <RootNamespace>Tilegram.Feature</RootNamespace>
+    <RootNamespace>Tilegra.Feature</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tilegram.Shared\Tilegram.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

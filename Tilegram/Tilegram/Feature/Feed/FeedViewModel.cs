@@ -4,7 +4,6 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using Tilegram.Services.Feed;
 using Windows.UI.Popups;
 
 namespace Tilegram.Feature.Feed

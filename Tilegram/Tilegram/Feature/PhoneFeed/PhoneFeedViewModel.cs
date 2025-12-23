@@ -6,7 +6,6 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Tilegram.Feature.Feed;
-using Tilegram.Services.Feed;
 
 namespace Tilegram.Feature.PhoneFeed
 {

@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Tilegram.Services.Profile;
 
 namespace Tilegram.Feature.Profile
 {
@@ -96,8 +95,8 @@ namespace Tilegram.Feature.Profile
         // Método para cargar posts desde un servicio (ejemplo)
         public async Task LoadPostsFromService()
         {
-            var service = Light.UWP.Services.IoC.Container.Instance.Resolve<ProfileService>();
-            var mePostsEither = await service.MePosts();
+            var service = Light.UWP.Services.IoC.Container.Instance.Resolve<IProfileService>();
+            var mePostsEither = await service.GetProfilePosts(AppSettings.UserName);
 
             mePostsEither.Match(ex =>
             {
@@ -112,11 +111,11 @@ namespace Tilegram.Feature.Profile
         #region Load Profile
         private async Task LoadProfile()
         {
-            var service = Light.UWP.Services.IoC.Container.Instance.Resolve<ProfileService>();
+            var service = Light.UWP.Services.IoC.Container.Instance.Resolve<IProfileService>();
             if (service == null)
                 return;
 
-            var meEither = await service.Me();
+            var meEither = await service.GetProfileData(AppSettings.UserName);
             meEither.Match(OnMeError, OnMeSuccess);
         }
 

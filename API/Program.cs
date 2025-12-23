@@ -1,4 +1,5 @@
-using API.Services;
+using Tilegram.Feature;
+using Tilegram.Feature.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,9 @@ builder.Services.AddSwaggerGen();
 
 var jwtKey = "304e8693f44b4b0fcb17fd256187d65fdb16df8c9adc12338e4693e68438ca9b";
 builder.Services.AddScoped<JwtService>(ci => new JwtService(jwtKey));
+builder.Services.AddScoped<ISessionHandler, SessionHandler>();
+builder.Services.AddAuthenticationFeature();
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 

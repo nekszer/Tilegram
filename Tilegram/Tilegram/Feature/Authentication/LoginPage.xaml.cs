@@ -2,7 +2,7 @@
 using Light.UWP.Services.Navigation;
 using Light.UWP.Services.Utils;
 using System;
-using Tilegram.Services.Authentication;
+using System.ComponentModel.DataAnnotations;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -68,7 +68,12 @@ namespace Tilegram.Feature.Authentication
         private async void OnLogInError(Exception exception)
         {
             var dialog = new MessageDialog("Info");
-            dialog.Content = "No es posible inciar sesión, intenta de nuevo";
+
+            if (exception is ValidationException validationException)
+                dialog.Content = validationException.Message;
+            else
+                dialog.Content = "No es posible inciar sesión, revisa tus datos.";
+
             await dialog.ShowAsync();
         }
     }

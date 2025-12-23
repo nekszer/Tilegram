@@ -3,7 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API", "API.csproj", "{5CBBA75B-DB24-4226-81D7-3F37D240B365}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tilegram.API", "Tilegram.API.csproj", "{5CBBA75B-DB24-4226-81D7-3F37D240B365}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tilegram.Shared", "..\Tilegram.Shared\Tilegram.Shared.csproj", "{CDB18521-C704-408A-9D23-20EBD72D76A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tilegram.Instagram", "..\TileGram.Instagram\Tilegram.Instagram.csproj", "{1420BD10-607A-4175-8946-2407932D8E11}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tilegram.Instagram.Test", "..\Tilegram.Instagram.Test\Tilegram.Instagram.Test.csproj", "{0B5163BF-B0CB-44E9-BFE0-0AE0EAD2417F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +21,18 @@ Global
 		{5CBBA75B-DB24-4226-81D7-3F37D240B365}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5CBBA75B-DB24-4226-81D7-3F37D240B365}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5CBBA75B-DB24-4226-81D7-3F37D240B365}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDB18521-C704-408A-9D23-20EBD72D76A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDB18521-C704-408A-9D23-20EBD72D76A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDB18521-C704-408A-9D23-20EBD72D76A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDB18521-C704-408A-9D23-20EBD72D76A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1420BD10-607A-4175-8946-2407932D8E11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1420BD10-607A-4175-8946-2407932D8E11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1420BD10-607A-4175-8946-2407932D8E11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1420BD10-607A-4175-8946-2407932D8E11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B5163BF-B0CB-44E9-BFE0-0AE0EAD2417F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B5163BF-B0CB-44E9-BFE0-0AE0EAD2417F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B5163BF-B0CB-44E9-BFE0-0AE0EAD2417F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B5163BF-B0CB-44E9-BFE0-0AE0EAD2417F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

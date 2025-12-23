@@ -1,11 +1,12 @@
 ﻿using Light.UWP.Services.IoC;
 using Light.UWP.Services.Navigation;
-using System;
+
+using Tilegram.Feature;
 using Tilegram.Feature.Authentication;
 using Tilegram.Feature.Feed;
 using Tilegram.Feature.PhoneFeed;
 using Tilegram.Feature.Profile;
-using Tilegram.Services.Authentication;
+
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Storage;
@@ -13,6 +14,8 @@ using Windows.System.Profile;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+
+using System;
 
 namespace Tilegram
 {
@@ -51,26 +54,26 @@ namespace Tilegram
             container.Register(ioc => new JwtService(jwtKey));
 
             AppSettings.ApiBaseUrl = "https://86462722aa86.ngrok-free.app/";
-            // AppSettings.AccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYyMjA0NDQ2NDcxLCJuYW1lIjoiU29mw61hIENhc3RpbGxvIiwidXNlck5hbWUiOiJiY2FzX3NvZmlhIiwicGljdHVyZSI6Imh0dHBzOi8vaW5zdGFncmFtLmZtZXgxMC00LmZuYS5mYmNkbi5uZXQvdi90NTEuMjg4NS0xOS81MzcyNTIyMTFfMTc5MjAwMjE2NTkwNzg0NzJfNzg3NjM3Njg5ODM5NzQxOTg3MV9uLmpwZz9zdHA9ZHN0LWpwZ19lMF9zMTUweDE1MF90dDYmZWZnPWV5SjJaVzVqYjJSbFgzUmhaeUk2SW5CeWIyWnBiR1ZmY0dsakxtUnFZVzVuYnk0eE1EZ3dMbU15SW4wJl9uY19odD1pbnN0YWdyYW0uZm1leDEwLTQuZm5hLmZiY2RuLm5ldCZfbmNfY2F0PTEwNCZfbmNfb2M9UTZjWjJRR25pWk5VVUdBMWdRd0s1NVgtSldDSktMTWdZN1BnNG9zOUE2SVNfZE1SWXpJQ3h0NmtvRk1HTWtTM3M3UW9ZN00mX25jX29oYz13QkV1a3dNdEV6MFE3a052d0habThIbyZlZG09QUFBQUFBQUJBQUFBJmNjYj03LTUmaWdfY2FjaGVfa2V5PUdIUFJCU0JJVDFzdEtxby1BRjg1RXVvT2cwNXRibU5EQVFBQjE1MDE1MDBqLWNjYjctNSZvaD0wMF9BZmxiUW1uNkpqdXBzZXAzcFJFOTRhUWxkQ2VhWTNZbXlTYzNRa0lLQlMxMHpnJm9lPTY5NEJCOTcyJl9uY19zaWQ9MzI4MjU5IiwiaWF0IjoxNzY2MTkzNzUxLCJleHAiOjE3Njg3ODU3NTF9.VxvzEAuLN2kUo3mcLffDuoz5TIdZa-KZjTRSwXjUhz4";
+			// AppSettings.AccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYyMjA0NDQ2NDcxLCJuYW1lIjoiU29mw61hIENhc3RpbGxvIiwidXNlck5hbWUiOiJiY2FzX3NvZmlhIiwicGljdHVyZSI6Imh0dHBzOi8vaW5zdGFncmFtLmZtZXgxMC00LmZuYS5mYmNkbi5uZXQvdi90NTEuMjg4NS0xOS81MzcyNTIyMTFfMTc5MjAwMjE2NTkwNzg0NzJfNzg3NjM3Njg5ODM5NzQxOTg3MV9uLmpwZz9zdHA9ZHN0LWpwZ19lMF9zMTUweDE1MF90dDYmZWZnPWV5SjJaVzVqYjJSbFgzUmhaeUk2SW5CeWIyWnBiR1ZmY0dsakxtUnFZVzVuYnk0eE1EZ3dMbU15SW4wJl9uY19odD1pbnN0YWdyYW0uZm1leDEwLTQuZm5hLmZiY2RuLm5ldCZfbmNfY2F0PTEwNCZfbmNfb2M9UTZjWjJRR25pWk5VVUdBMWdRd0s1NVgtSldDSktMTWdZN1BnNG9zOUE2SVNfZE1SWXpJQ3h0NmtvRk1HTWtTM3M3UW9ZN00mX25jX29oYz13QkV1a3dNdEV6MFE3a052d0habThIbyZlZG09QUFBQUFBQUJBQUFBJmNjYj03LTUmaWdfY2FjaGVfa2V5PUdIUFJCU0JJVDFzdEtxby1BRjg1RXVvT2cwNXRibU5EQVFBQjE1MDE1MDBqLWNjYjctNSZvaD0wMF9BZmxiUW1uNkpqdXBzZXAzcFJFOTRhUWxkQ2VhWTNZbXlTYzNRa0lLQlMxMHpnJm9lPTY5NEJCOTcyJl9uY19zaWQ9MzI4MjU5IiwiaWF0IjoxNzY2MTkzNzUxLCJleHAiOjE3Njg3ODU3NTF9.VxvzEAuLN2kUo3mcLffDuoz5TIdZa-KZjTRSwXjUhz4";
 
-            container.Register(ioc => 
+			container.Register<IAuthenticationService>(ioc => 
             {
                 var apiBaseUrl = AppSettings.ApiBaseUrl;
-                return new Services.Authentication.AuthenticationService(apiBaseUrl);
+                return new AuthenticationService(apiBaseUrl, ioc.Resolve<HttpClientService>());
             });
 
-            container.Register(ioc =>
+            container.Register<IProfileService>(ioc =>
             {
                 var apiBaseUrl = AppSettings.ApiBaseUrl;
                 var accessToken = AppSettings.AccessToken;
-                return new Services.Profile.ProfileService(apiBaseUrl, accessToken, ioc.Resolve<JwtService>());
+                return new ProfileService(apiBaseUrl, accessToken, ioc.Resolve<JwtService>(), ioc.Resolve<HttpClientService>());
             });
 
-            container.Register(ioc =>
+            container.Register<IFeedService>(ioc =>
             {
                 var apiBaseUrl = AppSettings.ApiBaseUrl;
                 var accessToken = AppSettings.AccessToken;
-                return new Services.Feed.FeedService(apiBaseUrl, accessToken, ioc.Resolve<JwtService>());
+                return new FeedService(apiBaseUrl, accessToken, ioc.Resolve<JwtService>(), ioc.Resolve<HttpClientService>());
             });
         }
 
